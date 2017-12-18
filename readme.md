@@ -1,4 +1,41 @@
-安装
+# Scrapy
+
+Scrapy 是基于twisted框架开发而来，twisted是一个流行的事件驱动的python网络框架。因此Scrapy使用了一种非阻塞（又名异步）的代码来实现并发。
+
+### 结构
+
+1. 引擎(EGINE)
+
+   引擎负责控制系统所有组件之间的数据流，并在某些动作发生时触发事件。有关详细信息，请参见上面的数据流部分。
+
+2. **调度器(SCHEDULER)**
+   用来接受引擎发过来的请求, 压入队列中, 并在引擎再次请求的时候返回. 可以想像成一个URL的优先级队列, 由它来决定下一个要抓取的网址是什么, 同时去除重复的网址
+
+3. **下载器(DOWLOADER)**
+   用于下载网页内容, 并将网页内容返回给EGINE，下载器是建立在twisted这个高效的异步模型上的
+
+4. **爬虫(SPIDERS)**
+   SPIDERS是开发人员自定义的类，用来解析responses，并且提取items，或者发送新的请求
+
+5. **项目管道(ITEM PIPLINES)**
+   在items被提取后负责处理它们，主要包括清理、验证、持久化（比如存到数据库）等操作
+
+6. 下载器中间件(Downloader Middlewares)
+
+   ​
+
+   位于Scrapy引擎和下载器之间，主要用来处理从EGINE传到DOWLOADER的请求request，已经从DOWNLOADER传到EGINE的响应response，你可用该中间件做以下几件事
+
+   1. process a request just before it is sent to the Downloader (i.e. right before Scrapy sends the request to the website);
+   2. change received response before passing it to a spider;
+   3. send a new Request instead of passing received response to a spider;
+   4. pass response to a spider without fetching a web page;
+   5. silently drop some requests.
+
+7. **爬虫中间件(Spider Middlewares)**
+   位于EGINE和SPIDERS之间，主要工作是处理SPIDERS的输入（即responses）和输出（即requests）
+
+### 安装
 
 ```python
 #Windows平台
@@ -14,7 +51,7 @@
     1、pip3 install scrapy
 ```
 
-命令
+### 命令
 
 ```python
 scrapy startproject amazon  #  创建一个scrapy项目
@@ -36,7 +73,7 @@ scrapy
 scrapy crawl --nolog spider_goods -a keyword=iphone
 ```
 
-选择器
+### 选择器
 
 ```python
 response.selector.css()
@@ -119,5 +156,13 @@ th='//img' data='<img src="image4_thumb.jpg">'>, <Selector xpath='//img' data='<
 'Name: My image 1 '
 >>> response.xpath('//div[count(a)=$yyy]/@id',yyy=5).extract_first() #求有5个a标签的div的id
 'images'
+```
+
+### 将命令行代码写成文件
+
+```python
+#在项目目录下新建：entrypoint.py
+from scrapy.cmdline import execute
+execute(['scrapy', 'crawl', 'xiaohua'])
 ```
 

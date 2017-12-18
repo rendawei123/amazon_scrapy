@@ -47,9 +47,11 @@ class SpiderGoodsSpider(scrapy.Spider):
         # print('-------详情页', response.url)
         item = AmazonItem()
         item['goods_name'] = response.xpath('//*[@id="productTitle"]/text()').extract_first().strip()
+        item['goods_price'] = response.xpath('//*[@id="priceblock_ourprice"]/text()').extract_first().strip()
         # item['goods_price']=
         # item['delivery_mod']=
         # 解析response.text的内容，拿到商品名，价钱，快递方式
+        return item
 # 切换到项目目录下命令行运行爬虫，需要传入搜索关键词
 # scrapy crawl spider_goods -a keywords=iphone
 # 执行这条命名首先会找到spider_goods这个文件，然后实例化里面的类，然后将参数传给类里面的__init__函数
